@@ -1,18 +1,18 @@
-import { User } from '../../models/User';
-
-interface LoginPropsService {
-  email: string;
-  password: string;
-}
+import { User } from '../../models';
+import type { UserLoginBody } from '../../schema';
+import { AppError } from '../../utils';
 
 export class LoginService {
-  async exec(data: LoginPropsService) {
-      const user = await User.findOne({ email: data.email, password: data.password });
+  async exec(data: UserLoginBody) {
+    const user = await User.findOne({
+      email: data.email,
+      password: data.password,
+    });
 
-      if(!user){
-        throw new Error('email or password is invalid')
-      }
+    if (!user) {
+      throw new AppError('Email or password is invalid.', 401);
+    }
 
-      return user
-}
+    return user;
+  }
 }

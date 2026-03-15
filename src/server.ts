@@ -1,6 +1,6 @@
 import { config } from 'dotenv';
 import { createApp } from './app';
-import { ConnectDataBase } from "./config/db";
+import { ConnectDataBase } from './config';
 
 export async function startServer() {
     config()

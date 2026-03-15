@@ -1,26 +1,21 @@
 import type { Request, Response } from 'express';
-import { LoginService } from '../../services/user/login.service';
+import { userLoginBodySchema } from '../../schema';
+import { LoginService } from '../../services/user';
+import { sendError, sendSuccess } from '../../utils';
 
 export class LoginUserController {
   async handle(req: Request, res: Response) {
     try {
-      const { email, password } = req.body;
       const loginUserService = new LoginService();
+      const validatedBody = userLoginBodySchema.parse(req.body);
+      const loggedUser = await loginUserService.exec(validatedBody);
 
-      const loginUser = await loginUserService.exec({
-        email,
-        password,
+      return sendSuccess(res, {
+        message: 'Login successful.',
+        data: loggedUser,
       });
-
-      res.status(200).json({
-        mensagem: 'Login is sucess',
-        loginUser,
-      });
-
-    } catch (error: any) {
-      res.status(400).json({
-        mensagem: 'erro no auth/login: ' + error.message,
-      });
+    } catch (error) {
+      return sendError(res, error);
     }
   }
 }

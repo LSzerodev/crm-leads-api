@@ -1,17 +1,10 @@
-import { Lead } from "../../models/Lead";
-import {
-  leadInitialStage,
-  leadInitialStatus,
-  type LeadCreateBody,
-} from "../../schema/lead.schema";
-
-interface LeadCreatePayload extends LeadCreateBody {
-  userId: string;
-}
+import type { LeadCreateData } from '../../interfaces';
+import { Lead } from '../../models';
+import { leadInitialStage, leadInitialStatus } from '../../schema';
 
 export class LeadCreateService {
-  async exec(data: LeadCreatePayload) {
-    const lead = await Lead.create({
+  async exec(data: LeadCreateData) {
+    return Lead.create({
       userId: data.userId,
       name: data.name,
       indication: data.indication,
@@ -21,7 +14,5 @@ export class LeadCreateService {
       stage_actual: leadInitialStage,
       stage_status: leadInitialStatus,
     });
-
-    return lead
   }
 }

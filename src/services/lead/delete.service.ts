@@ -1,8 +1,15 @@
-import { Lead } from "../../models/Lead";
+import { Lead } from '../../models';
+import { AppError } from '../../utils';
 
 export class DeleteLeadService {
-  async exec(leadId: string) {
-    const lead = await Lead.findByIdAndDelete(leadId);
-    return lead
-}
+  async exec(userId: string, leadId: string) {
+    const deletedLead = await Lead.findOneAndDelete({
+      _id: leadId,
+      userId,
+    });
+
+    if (!deletedLead) {
+      throw new AppError('Lead not found for this user.', 404);
+    }
+  }
 }

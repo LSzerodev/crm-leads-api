@@ -1,28 +1,27 @@
 import type { Request, Response } from 'express';
-import {
-  leadParamsSchema,
-  leadStageBodySchema,
-} from '../../schema/lead.schema';
-import { StagePutService } from '../../services/lead/stage.service';
+import { leadParamsSchema, leadStageBodySchema } from '../../schema';
+import { StagePutService } from '../../services/lead';
+import { sendError, sendSuccess } from '../../utils';
 
 export class StagePutController {
   async handle(req: Request, res: Response) {
     try {
-      const { leadId } = leadParamsSchema.parse(req.params);
+      const { userId, leadId } = leadParamsSchema.parse(req.params);
       const { stage_actual, stage_status } = leadStageBodySchema.parse(req.body);
-
       const stageService = new StagePutService();
-      const stage = await stageService.exec(leadId, stage_actual, stage_status);
-      res.status(200).json({
-        mensagem: 'Lead put for sucess',
-        stage,
-      });
+      const stage = await stageService.exec(
+        userId,
+        leadId,
+        stage_actual,
+        stage_status,
+      );
 
-    } catch (error: any) {
-
-      res.status(400).json({
-        mensagem: 'erro at put: ' + error.message,
+      return sendSuccess(res, {
+        message: 'Lead stage updated successfully.',
+        data: stage,
       });
+    } catch (error) {
+      return sendError(res, error);
     }
   }
 }

@@ -1,31 +1,31 @@
-# crm-leads-api
+# CRM Leads API
 
-Backend CRM API built with TypeScript, Node.js, Express, MongoDB, and Zod. The project demonstrates a layered backend architecture with user flows and lead management in a realistic CRM-style scenario.
+API backend para gerenciamento de leads em um cenário de CRM, construída com TypeScript, Node.js, Express, MongoDB e Zod. O projeto foi desenvolvido com foco em organização por camadas, validação de dados e clareza de manutenção, servindo como vitrine de backend para portfólio e currículo.
 
-## Overview
+## Visão Geral
 
-This API supports:
-- user creation
-- user login
-- user listing and deletion
-- lead creation per user
-- lead listing by user
-- lead information updates
-- lead stage and status updates
-- lead deletion
+O sistema permite:
 
-The codebase is organized around `routes`, `controllers`, `services`, `models`, and `schema`, making the business flow easy to follow and extend.
+- cadastro de usuários
+- login com validação de credenciais
+- listagem e remoção de usuários
+- criação de leads vinculados a um usuário
+- listagem de leads com filtros
+- edição de informações do lead
+- atualização de etapa e status do lead
+- remoção de leads
+- dashboard com distribuição por etapa, status e origem do lead
 
-## Main Features
+## Principais Destaques
 
-- Layered backend architecture
-- MongoDB persistence with Mongoose
-- Request validation with Zod
-- Lead ownership through `userId`
-- Separate flows for editing lead info and changing lead stage/status
-- Clear route structure for CRM operations
+- arquitetura em camadas com separação entre `routes`, `controllers`, `services`, `models`, `schema`, `interfaces` e `utils`
+- validação de entrada com Zod
+- persistência com MongoDB via Mongoose
+- filtros de leads por nome, etapa, status, indicação e período
+- resposta de dashboard agregada com `aggregate` e `facet`
+- organização recente de tipos, helpers e exports para facilitar manutenção
 
-## Tech Stack
+## Stack Utilizada
 
 - TypeScript
 - Node.js
@@ -36,108 +36,49 @@ The codebase is organized around `routes`, `controllers`, `services`, `models`, 
 - Dotenv
 - TSX
 
-## Project Structure
+## Estrutura do Projeto
 
 ```text
 src/
   config/
-    db.ts
   controllers/
     lead/
     user/
+  interfaces/
+    http/
+    models/
+    services/
   models/
-    Lead.ts
-    User.ts
   routes/
-    routes.ts
   schema/
-    lead.schema.ts
-    user.schema.ts
   services/
     lead/
+      dashboard/
+      query-builder/
     user/
+  utils/
   app.ts
   server.ts
 ```
 
-## Running Locally
+## Rotas Principais
 
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/LSzerodev/crm-leads-api.git
-cd crm-leads-api
-```
-
-### 2. Install dependencies
-
-```bash
-npm install
-```
-
-### 3. Configure environment variables
-
-Create a local `.env` file based on `.env.example`.
-
-```bash
-cp .env.example .env
-```
-
-If you are on Windows PowerShell, you can use:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-### 4. Start MongoDB
-
-Make sure a MongoDB instance is available locally or update `MONGODB_URI` to point to your database server.
-
-### 5. Run the API
-
-Development mode:
-
-```bash
-npm run dev
-```
-
-Single-run mode:
-
-```bash
-npm run start
-```
-
-Type check:
-
-```bash
-npm run typecheck
-```
-
-## Environment Variables
-
-| Variable | Required | Description |
+| Método | Rota | Descrição |
 | --- | --- | --- |
-| `PORT_SERVER` | Yes | Port used by the Express server |
-| `MONGODB_URI` | Yes | MongoDB connection string |
-| `JWT_SECRET` | Optional for now | Reserved for token-based auth improvements |
+| `POST` | `/users` | Cadastra um usuário |
+| `GET` | `/users` | Lista usuários |
+| `POST` | `/auth/login` | Realiza login |
+| `DELETE` | `/user/:id` | Remove um usuário |
+| `POST` | `/users/:userId/lead` | Cria um lead para o usuário |
+| `GET` | `/users/:userId/leads` | Lista leads do usuário |
+| `GET` | `/users/:userId/leads/dashboard` | Retorna o dashboard dos leads |
+| `PUT` | `/users/:userId/leads/:leadId/editInfo` | Edita informações do lead |
+| `PUT` | `/users/:userId/leads/:leadId/stage` | Atualiza etapa e status do lead |
+| `DELETE` | `/users/:userId/leads/:leadId` | Remove um lead |
 
-## Main Routes
+## Exemplos de Payload
 
-| Method | Route | Description |
-| --- | --- | --- |
-| `POST` | `/users` | Create a new user |
-| `GET` | `/users` | List users from the database |
-| `POST` | `/auth/login` | Login with email and password |
-| `DELETE` | `/user/:id` | Delete a user |
-| `POST` | `/users/:userId/lead` | Create a lead for a user |
-| `GET` | `/users/:userId/leads` | List leads for a user |
-| `PUT` | `/users/:userId/leads/:leadId/editInfo` | Update lead information |
-| `PUT` | `/users/:userId/leads/:leadId/stage` | Update lead stage and status |
-| `DELETE` | `/users/:userId/leads/:leadId` | Delete a lead |
-
-### Example Payloads
-
-Create user:
+Criar usuário:
 
 ```json
 {
@@ -147,7 +88,7 @@ Create user:
 }
 ```
 
-Create lead:
+Criar lead:
 
 ```json
 {
@@ -155,11 +96,11 @@ Create lead:
   "email": "maria@gmail.com",
   "indication": "Instagram",
   "phone": "(11) 99999-9999",
-  "note": "Interested in premium plan."
+  "note": "Interessada no plano premium."
 }
 ```
 
-Update lead stage:
+Atualizar etapa do lead:
 
 ```json
 {
@@ -168,16 +109,61 @@ Update lead stage:
 }
 ```
 
-## Future Improvements
+## Como Executar Localmente
 
-- Add password hashing with `bcrypt`
-- Implement JWT token generation and protected routes
-- Add unit and integration tests
-- Add pagination and filtering for lead listing
-- Add request logging and centralized error handling
-- Add Docker support
-- Standardize response messages and language
+1. Clone o repositório:
 
-## Author
+```bash
+git clone https://github.com/LSzerodev/crm-leads-api.git
+cd crm-leads-api
+```
+
+2. Instale as dependências:
+
+```bash
+npm install
+```
+
+3. Crie o arquivo de ambiente com base no exemplo:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+4. Ajuste as variáveis:
+
+| Variável | Obrigatória | Descrição |
+| --- | --- | --- |
+| `PORT_SERVER` | Sim | Porta da API |
+| `MONGODB_URI` | Sim | String de conexão com MongoDB |
+| `JWT_SECRET` | Não | Reservada para evolução da autenticação |
+
+5. Inicie o projeto:
+
+```bash
+npm run dev
+```
+
+Outros comandos úteis:
+
+```bash
+npm run start
+npm run typecheck
+```
+
+## Processo de Desenvolvimento
+
+Durante a evolução do projeto, utilizei IA como apoio para aumentar a produtividade em tarefas como refatoração estrutural, revisão de organização de arquivos, documentação e melhoria de legibilidade. As decisões finais de implementação, validação e ajuste do código continuaram sob minha responsabilidade.
+
+## Melhorias Futuras
+
+- aplicar hash de senha com `bcrypt`
+- gerar tokens JWT e proteger rotas
+- adicionar testes unitários e de integração
+- incluir paginação nas listagens
+- padronizar logs e observabilidade
+- adicionar Docker para ambiente local e deploy
+
+## Autor
 
 **LSzerodev**

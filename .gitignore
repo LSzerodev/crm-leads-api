@@ -1,12 +1,50 @@
 node_modules/
 dist/
-.env
-.env.local
-.env.*.local
+build/
 coverage/
+.nyc_output/
+.cache/
+.turbo/
+tmp/
+temp/
+
+# arquivos de ambiente e segredos
+.env
+.env.*
+!.env.example
+!.env.sample
+.envrc
+.direnv/
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+*.jks
+*.secret
+secrets.*
+
+# logs e artefatos de runtime
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.pid
+*.seed
+*.pid.lock
+
+# cache e compilacao
 *.tsbuildinfo
+.eslintcache
+
+# sistema operacional
 .DS_Store
 Thumbs.db
+Desktop.ini
+
+# editores e IDEs
 .vscode/
 .idea/
+.history/

@@ -1,25 +1,22 @@
-import { userSchemaValidation } from "../../schema/user.schema";
-import { CreateUserService } from "../../services/user/create.service";
-import type{ Request, Response } from "express";
+import type { Request, Response } from 'express';
+import { userCreateBodySchema } from '../../schema';
+import { CreateUserService } from '../../services/user';
+import { sendError, sendSuccess } from '../../utils';
 
 export class CreateUserController {
-  async handle(req: Request, res: Response){
+  async handle(req: Request, res: Response) {
     try {
-        const createService = new CreateUserService()
-        const validation = userSchemaValidation.parse(req.body)
+      const createService = new CreateUserService();
+      const validatedBody = userCreateBodySchema.parse(req.body);
+      const createdUser = await createService.exec(validatedBody);
 
-        const createUser = await createService.exec(validation)
-
-        res.status(201).json({
-          mensagem: 'usuario cadastrado',
-          createUser,
-        });
-
-      } catch (error: any) {
-
-        res.status(400).json({
-          mensagem: "erro at user: " + error.message,
-        });
-      }
+      return sendSuccess(res, {
+        status: 201,
+        message: 'User created successfully.',
+        data: createdUser,
+      });
+    } catch (error) {
+      return sendError(res, error);
+    }
   }
 }

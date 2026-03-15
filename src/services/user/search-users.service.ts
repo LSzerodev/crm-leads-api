@@ -1,9 +1,7 @@
-import { User } from '../../models/User';
-
+import { User } from '../../models';
 
 export class SearchUserService {
   async exec() {
-    const users = await User.find()
-    return users
+    return User.find().sort({ create_d: -1 });
   }
 }

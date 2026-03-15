@@ -10,6 +10,8 @@ const emailAccept = [
   'protonmail.com',
 ];
 
+const mongoIdRegex = /^[a-f\d]{24}$/i;
+
 const nameSchema = z
   .string()
   .trim()
@@ -29,15 +31,40 @@ const emailSchema = z
 
 const passwordSchema = z
   .string()
-  .min(8, 'A senha deve ter pelo menos 8 caracteres')
-  .max(64, 'A senha deve ter no máximo 64 caracteres')
-  .regex(/[A-Z]/, 'Deve ter pelo menos uma letra maiúscula')
-  .regex(/[a-z]/, 'Deve ter pelo menos uma letra minúscula')
-  .regex(/[0-9]/, 'Deve ter pelo menos um número')
-  .regex(/[!@#$%^&*(),.?":{}|<>]/, 'Deve ter pelo menos um símbolo');
+  .min(8, 'Password must have at least 8 characters')
+  .max(64, 'Password must have at most 64 characters')
+  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+  .regex(/[0-9]/, 'Password must contain at least one number')
+  .regex(/[!@#$%^&*(),.?":{}|<>]/, 'Password must contain at least one symbol');
 
-export const userSchemaValidation = z.object({
-  name: nameSchema,
-  email: emailSchema,
-  password: passwordSchema,
-}).strict();
+const loginPasswordSchema = z
+  .string()
+  .min(1, 'Password is required');
+
+export const userCreateBodySchema = z
+  .object({
+    name: nameSchema,
+    email: emailSchema,
+    password: passwordSchema,
+  })
+  .strict();
+
+export const userLoginBodySchema = z
+  .object({
+    email: emailSchema,
+    password: loginPasswordSchema,
+  })
+  .strict();
+
+export const userDeleteParamsSchema = z.object({
+  id: z
+    .string()
+    .trim()
+    .regex(mongoIdRegex, 'id must be a valid MongoDB id.'),
+});
+
+export const userSchemaValidation = userCreateBodySchema;
+
+export type UserCreateBody = z.infer<typeof userCreateBodySchema>;
+export type UserLoginBody = z.infer<typeof userLoginBodySchema>;

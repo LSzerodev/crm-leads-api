@@ -1,40 +1,19 @@
-import { User } from "../../models/User";
-
-interface RegisterUserProps {
-    name: string
-    email: string
-    password: string
-}
+import { User } from '../../models';
+import type { UserCreateBody } from '../../schema';
+import { AppError } from '../../utils';
 
 export class CreateUserService {
-  async exec(data: RegisterUserProps) {
+  async exec(data: UserCreateBody) {
     const user = await User.findOne({ email: data.email });
 
     if (user) {
-      throw new Error('This email already exists.');
+      throw new AppError('This email already exists.', 409);
     }
 
-    const dataUser = await User.create({
+    return User.create({
       name: data.name,
       email: data.email,
       password: data.password,
     });
-
-    return dataUser;
   }
 }
-
-
-// try {
-//     //     const { name, email, password } = req.body;
-//     //     const register = await User.create({
-//     //       name,
-//     //       email,
-//     //       password,
-//     //     });
-//     //     res.status(201).json({
-//     //       mensagem: 'usuario cadastrado',
-//     //       register,
-//     //     });
-//     //   } catch (error: any) {
-//     //     console.error('erro no /users registerUser', error);
